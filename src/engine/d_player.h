@@ -129,6 +129,7 @@ typedef struct player_s {
 
     // True if button down last tic.
     int             attackdown;
+    int             altattackdown;
     int             usedown;
 
     // [kex] true if jump button down last tic
@@ -180,6 +181,10 @@ typedef struct player_s {
     
     // [kex] display pic as message instead of text
     int             messagepic;
+
+    int             pistolChargeTime;    // Track charging time
+    boolean         pistolCharged;   // Track if pistol is fully charged
+	boolean		    pistolCharging; // Track if pistol is currently charging
 
 } player_t;
 

@@ -83,6 +83,7 @@ typedef struct {
 	int        downstate;
 	int        readystate;
 	int        atkstate;
+	int		   altatkstate;
 	int        flashstate;
 } weaponinfo_t;
 

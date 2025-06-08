@@ -777,6 +777,10 @@ void G_BuildTiccmd(ticcmd_t* cmd) {
 		cmd->buttons |= BT_ATTACK;
 	}
 
+	if (pc->key[PCKEY_ALTATTACK]) {
+		cmd->buttons2 |= BT2_ALTATTACK;
+	}
+
 	if (pc->key[PCKEY_USE]) {
 		cmd->buttons |= BT_USE;
 		// clear double clicks if hit use button
@@ -1245,9 +1249,11 @@ void G_PlayerReborn(int player) {
 	p->usedown = p->attackdown = p->jumpdown = true;  // don't do anything immediately
 	p->playerstate = PST_LIVE;
 	p->health = deh_initial_health;
-	p->readyweapon = p->pendingweapon = wp_pistol;
+	//p->readyweapon = p->pendingweapon = wp_pistol;
+	p->readyweapon = p->pendingweapon = wp_dreadbuster;
 	p->weaponowned[wp_fist] = true;
-	p->weaponowned[wp_pistol] = true;
+	//p->weaponowned[wp_pistol] = true;
+	p->weaponowned[wp_dreadbuster] = true;
 	p->ammo[am_clip] = deh_initial_bullets;
 	p->recoilpitch = 0;
 
@@ -1639,6 +1645,8 @@ void G_Init(void) {
 
 	G_AddCommand("+fire", CMD_Button, PCKEY_ATTACK);
 	G_AddCommand("-fire", CMD_Button, PCKEY_ATTACK | PCKF_UP);
+	G_AddCommand("+altfire", CMD_Button, PCKEY_ALTATTACK);
+	G_AddCommand("-altfire", CMD_Button, PCKEY_ALTATTACK | PCKF_UP);
 	G_AddCommand("+strafe", CMD_Button, PCKEY_STRAFE);
 	G_AddCommand("-strafe", CMD_Button, PCKEY_STRAFE | PCKF_UP);
 	G_AddCommand("+use", CMD_Button, PCKEY_USE);

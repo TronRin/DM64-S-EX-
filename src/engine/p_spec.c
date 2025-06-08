@@ -170,7 +170,38 @@ extern line_t** linespeciallist;
 //
 // P_InitPicAnims
 //
+
 void P_InitPicAnims(void) {
+	int i = 0;
+
+	P_InitAnimdef();
+
+	if (numanimdef == 0) {
+		animinfo = NULL;
+		return;
+	}
+
+	animinfo = Z_Malloc(sizeof(animinfo_t) * numanimdef, PU_STATIC, 0);
+
+	// Init animation
+	for (i = 0; i < numanimdef; i++) {
+		animinfo[i].delay = 0;
+		animinfo[i].tic = 0;
+		animinfo[i].isreverse = false;
+		animinfo[i].texnum = W_GetNumForName(animdefs[i].name) - t_start;
+		animinfo[i].frame = -1;
+
+		if (animdefs[i].palette) {
+			int lump = animinfo[i].texnum;
+			textureptr[lump] = (dtexture*)Z_Realloc(textureptr[lump],
+				animdefs[i].frames * sizeof(dtexture), PU_STATIC, 0);
+		}
+	}
+}
+
+
+//OG
+/*void P_InitPicAnims(void) {
 	int    i = 0;
 
 	P_InitAnimdef();
@@ -195,7 +226,7 @@ void P_InitPicAnims(void) {
 				animdefs[i].frames * sizeof(dtexture), PU_STATIC, 0);
 		}
 	}
-}
+}*/
 
 //
 // P_CyclePicAnims

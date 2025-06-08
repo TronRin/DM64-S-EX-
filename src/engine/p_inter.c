@@ -1240,6 +1240,9 @@ void P_KillMobj(mobj_t* source, mobj_t* target) {
 			target->player->frags[target->player - players]++;
 		}
 
+		target->player->pistolChargeTime = 0; // reset pistol charge time
+		target->player->pistolCharged = false; // reset pistol charged state
+
 		target->flags &= ~MF_SOLID;
 		target->player->playerstate = PST_DEAD;
 		P_DropWeapon(target->player);
@@ -1259,6 +1262,7 @@ void P_KillMobj(mobj_t* source, mobj_t* target) {
 		{
 			P_Obituary(source, target);
 		}
+
 	}
 
 	if ((m_brutal.value == 1 && source && source->player && target->info->xdeathstate && !(demoplayback || demorecording || netgame)))
@@ -1321,6 +1325,7 @@ void P_KillMobj(mobj_t* source, mobj_t* target) {
 
 	mo = P_SpawnMobj(target->x, target->y, ONFLOORZ, item);
 	mo->flags |= MF_DROPPED;    // special versions of items
+
 }
 
 //

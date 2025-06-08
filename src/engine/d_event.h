@@ -104,7 +104,8 @@ typedef enum {
     BT2_JUMP         = 1,
     BT2_NEXTWEAP     = 2,
     BT2_PREVWEAP     = 4,
-    BT2_CENTER       = 8
+    BT2_CENTER       = 8,
+    BT2_ALTATTACK     = 9,
 } buttoncode2_t;
 
 

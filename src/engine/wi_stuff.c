@@ -158,6 +158,16 @@ int WI_Ticker(void) {
 				else {
 					player->attackdown = false;
 				}
+				if (player->cmd.buttons2 & BT2_ALTATTACK) {
+					if (!player->altattackdown) {
+						S_StartSound(NULL, sfx_explode);
+						wi_advance++;
+					}
+					player->altattackdown = true;
+				}
+				else {
+					player->altattackdown = false;
+				}
 
 				if (player->cmd.buttons & BT_USE) {
 					if (!player->usedown) {

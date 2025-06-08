@@ -79,7 +79,7 @@ char* sprnames[NUMSPRITES + 1] = {  //0x5FA30
 	"FERY", "PAI3", "HXSG", "HXSF", "HX1G", "HX2G", "HX3G", "HXSP",
 	"HARB", "RECI", "SKUT", "REC2", "CENT", "CTFX", "DRKI", "BG2G",
 	"BFG2", "WZRD", "FX11", "ENSL", "BSP3", "APL2", "CUTH", "OLDP",
-	"BLUP", "FTWR", "FTWP", "IFLM", "IFL2", "AGAS", "AGA2",
+	"BLUP", "FTWR", "FTWP", "DRED", "IFLM", "IFL2", "AGAS", "AGA2",
 	NULL
 };
 
@@ -90,7 +90,9 @@ void A_Lower();
 void A_Raise();
 void A_Punch();
 void A_ReFire();
+void A_AltReFire();
 void A_FirePistol();
+void A_FireChargePistol();
 void A_FireShotgun();
 void A_FireShotgun2();
 void A_CheckReload();
@@ -290,6 +292,7 @@ void A_DeepOneMelee();
 void A_FireFlamethrower();
 void A_DamageBurn();
 void A_SoundFlameBurn();
+void A_FireDreadBuster();
 
 
 
@@ -1452,7 +1455,7 @@ state_t states[NUMSTATES] = {      //0x4DFF4
 	/*S_BFG10KBALL_DIE6*/{ SPR_BFS1, 32774, 2, {NULL}, S_BFG10KBALL_DIE7 },
 	/*S_BFG10KBALL_DIE7*/{ SPR_BFS1, 32775, 2, {NULL}, S_NULL },
 
-	/*S_FLAMETHROWER*/{ SPR_FTWR, 0, 1, {A_WeaponReady}, S_FLAMETHROWER },
+	/*S_FLAMETHROWER*/{ SPR_FTWR , 0, 1, {A_WeaponReady}, S_FLAMETHROWER },
 	/*S_FLAMETHROWERDOWN*/{ SPR_FTWR, 0, 1, {A_Lower}, S_FLAMETHROWERDOWN },
 	/*S_FLAMETHROWERUP*/{ SPR_FTWR, 0, 1, {A_Raise}, S_FLAMETHROWERUP },
 	/*S_FLAMETHROWER1*/{ SPR_FTWR, 32769, 1, {NULL}, S_FLAMETHROWER2 },
@@ -1501,6 +1504,18 @@ state_t states[NUMSTATES] = {      //0x4DFF4
 	/*S_PROJECTILEFlAME_DIE23*/{ SPR_IFL2, 32776, 2, {NULL}, S_PROJECTILEFlAME_DIE24 },
 	/*S_PROJECTILEFlAME_DIE24*/{ SPR_IFL2, 32775, 2, {NULL}, S_PROJECTILEFlAME_DIE25 },
 	/*S_PROJECTILEFlAME_DIE25*/{ SPR_IFL2, 32776, 2, {NULL}, S_NULL },
+
+	////WPN_PREDATOR////
+	//DREADBUSTER
+	/*S_DREADB*/{ SPR_DRED, 0, 1, {A_WeaponReady}, S_DREADB },
+	/*S_DREADBDOWN*/{ SPR_DRED, 0, 1, {A_Lower}, S_DREADBDOWN },
+	/*S_DREADBUP*/{ SPR_DRED, 0, 1, {A_Raise}, S_DREADBUP },
+	/*S_DREADB1*/{ SPR_DRED, 0, 2, {NULL}, S_DREADB2 },
+	/*S_DREADB2*/{ SPR_DRED, 2, 1, {A_FireDreadBuster}, S_DREADB3 },
+	/*S_DREADB3*/{ SPR_DRED, 3, 2, {NULL}, S_DREADB4 },
+	/*S_DREADB4*/{ SPR_DRED, 4, 2, {NULL}, S_DREADB5 },
+	/*S_DREADB5*/{ SPR_DRED, 0, 1, {A_ReFire}, S_DREADB },
+	/*S_DREADBFLASH*/{ SPR_DRED, 5, 3, {NULL}, S_DREADBFLASH },
 
 	/*S_NAILSAMMO*/{ SPR_NLBX, 0, -1, {NULL}, S_NULL },
 

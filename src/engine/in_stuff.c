@@ -237,6 +237,17 @@ int IN_Ticker(void) {
 					player->attackdown = false;
 				}
 
+				if (player->cmd.buttons2 & BT2_ALTATTACK) {
+					if (!player->altattackdown) {
+						IN_Finish();
+					}
+					player->altattackdown = true;
+				}
+				else {
+					player->altattackdown = false;
+				}
+
+
 				if (player->cmd.buttons & BT_USE) {
 					if (!player->usedown) {
 						IN_Finish();

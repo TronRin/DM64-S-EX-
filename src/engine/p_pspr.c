@@ -63,7 +63,7 @@ CVAR_EXTERNAL(v_accessibility);
 weaponinfo_t    weaponinfo[NUMWEAPONS] = {
 	{ am_noammo,    S_SAWUP, S_SAWDOWN, S_SAWA, S_SAW1, S_NULL },    // chainsaw
 	{ am_noammo,    S_PUNCHUP, S_PUNCHDOWN, S_PUNCH, S_PUNCH1, S_NULL },    // fist
-	{ am_clip,      S_PISTOLUP, S_PISTOLDOWN, S_PISTOL, S_PISTOL1, S_PISTOLFLASH },    // pistol
+	{ am_clip,      S_PISTOLUP, S_PISTOLDOWN, S_PISTOL, S_PISTOL1, S_PISTOLFLASH },		//pistol
 	{ am_shell,     S_SGUNUP, S_SGUNDOWN, S_SGUN, S_SGUN1, S_SGUNFLASH },    // shotgun
 	{ am_shell,     S_SSGUP, S_SSGDOWN, S_SSG, S_SSG1, S_SSGFLASH },    // super shotgun
 	{ am_clip,      S_CHAINGUP, S_CHAINGDOWN, S_CHAING, S_CHAING1, S_CHAINGLIGHT1 },    // chaingun
@@ -71,11 +71,12 @@ weaponinfo_t    weaponinfo[NUMWEAPONS] = {
 	{ am_cell,      S_PLASMAGUP1, S_PLASMAGDOWN, S_PLASMAG, S_PLASMAG1, S_PLASMAFLASH1 },    // plasma gun
 	{ am_cell,      S_BFGUP, S_BFGDOWN, S_BFG, S_BFG1, S_BFGLIGHT1 },    // bfg
 	{ am_cell,      S_LASERGUP, S_LASERGDOWN, S_LASERG, S_LASERG1, S_LASERGLIGHT },    // laser rifle
-	{ am_nails,      S_NAILGUP, S_NAILGDOWN, S_NAILG, S_NAILG1, S_NULL },    // nailgun
+	{ am_nails,     S_NAILGUP, S_NAILGDOWN, S_NAILG, S_NAILG1, S_NULL },    // nailgun
 	{ am_shell,     S_QSGUP, S_QSGDOWN, S_QSG, S_QSG1, S_NULL },    // quad shotgun
 	{ am_shell,     S_HXSGUP, S_HXSGDOWN, S_HXSG, S_HXSG1, S_NULL },    // hexa shotgun
 	{ am_cell,      S_BFG10KUP1, S_BFG10KDOWN, S_BFG10KREADY1, S_BFG10K1, S_NULL },    // bfg10k
-	{ am_fuel,      S_FLAMETHROWERUP, S_FLAMETHROWERDOWN, S_FLAMETHROWER, S_FLAMETHROWER1, S_NULL }    // flamethrower
+	{ am_fuel,      S_FLAMETHROWERUP, S_FLAMETHROWERDOWN, S_FLAMETHROWER, S_FLAMETHROWER1, S_NULL },   // flamethrower
+	{ am_clip,      S_DREADBUP, S_DREADBDOWN, S_DREADB, S_DREADB1, S_DREADBFLASH }	//DreadBuster
 };
 
 static int laserCells = 1;
@@ -225,6 +226,9 @@ boolean P_CheckAmmo(player_t* player) {
 	else if (player->readyweapon == wp_laser) {
 		count = laserCells;
 	}
+	else if (player->readyweapon == wp_dreadbuster) {
+		count = 3;    // 3 shot
+	}
 	else {
 		count = 1;    // Regular.
 	}
@@ -292,6 +296,10 @@ boolean P_CheckAmmo(player_t* player) {
 			&& player->ammo[am_fuel]) {
 			player->pendingweapon = wp_flamethrower;
 		}
+		else if (player->weaponowned[wp_dreadbuster]
+			&& player->ammo[am_clip] > 3) {
+			player->pendingweapon = wp_dreadbuster;
+		}
 		else {
 			// If everything fails.
 			player->pendingweapon = wp_fist;
@@ -309,6 +317,7 @@ boolean P_CheckAmmo(player_t* player) {
 //
 void P_FireWeapon(player_t* player) {
 	statenum_t    newstate;
+	statenum_t	  altnewstate;
 
 	if (!P_CheckAmmo(player)) {
 		return;
@@ -327,8 +336,28 @@ void P_FireWeapon(player_t* player) {
 	if (player->refire && player->readyweapon == wp_flamethrower) {
 		newstate = S_FLAMETHROWER3;
 	}
+	if (player->refire && player->readyweapon == wp_dreadbuster) {
+		newstate++;
+	}
 	P_SetPsprite(player, ps_weapon, newstate);
 	P_NoiseAlert(player->mo, player->mo);
+/*
+	P_SetMobjState(player->mo, S_PLAY_ATK1);
+	player->psprites[ps_weapon].sx = FRACUNIT;
+	player->psprites[ps_weapon].sy = WEAPONTOP;
+	altnewstate = weaponinfo[player->readyweapon].altatkstate;
+	if (player->refire && player->readyweapon == wp_pistol) {
+		altnewstate++;
+	}
+	if (player->refire && player->readyweapon == wp_bfg10k) {
+		altnewstate = S_BFG10K4;
+	}
+	if (player->refire && player->readyweapon == wp_flamethrower) {
+		altnewstate = S_FLAMETHROWER3;
+	}
+	P_SetPsprite(player, ps_weapon, altnewstate);
+	P_NoiseAlert(player->mo, player->mo);
+	*/
 }
 
 //
@@ -341,6 +370,7 @@ void P_FireWeapon(player_t* player) {
 
 void A_WeaponReady(player_t* player, pspdef_t* psp) {
 	statenum_t    newstate;
+	//statenum_t	  altnewstate;
 	int         angle;
 
 	// check for change
@@ -349,7 +379,9 @@ void A_WeaponReady(player_t* player, pspdef_t* psp) {
 		// change weapon
 		//    (pending weapon should allready be validated)
 		newstate = weaponinfo[player->readyweapon].downstate;
+		//altnewstate = weaponinfo[player->readyweapon].downstate;
 		P_SetPsprite(player, ps_weapon, newstate);
+		//P_SetPsprite(player, ps_weapon, altnewstate);
 		return;
 	}
 
@@ -368,6 +400,23 @@ void A_WeaponReady(player_t* player, pspdef_t* psp) {
 		player->attackdown = false;
 	}
 
+	// check for alternate fire
+	//	 the missile launcher and bfg do not auto fire
+	/*
+	if (player->cmd.buttons2 & BT2_ALTATTACK) {
+		if (!player->altattackdown
+			|| (player->readyweapon != wp_missile
+				&& player->readyweapon != wp_bfg)) {
+			player->altattackdown = true;
+			P_FireWeapon(player);
+			return;
+		}
+	}
+	else {
+		player->altattackdown = false;
+	}
+	*/
+
 	// bob the weapon based on movement speed
 	angle = (128 * leveltime) & FINEANGLES - 1;
 	psp->sx = FRACUNIT + FixedMul(player->bob, finecosine[angle]);
@@ -380,6 +429,47 @@ void A_WeaponReady(player_t* player, pspdef_t* psp) {
 // The player can re-fire the weapon
 // without lowering it entirely.
 //
+/*
+void A_ReFire(player_t* player, pspdef_t* psp)
+{
+	// Check for fire
+	//    (if a weaponchange is pending, let it go through instead)
+	if ((player->cmd.buttons & BT_ATTACK)
+		&& player->pendingweapon == wp_nochange
+		&& player->health)
+	{
+		player->refire++;
+
+		// Don't auto re-fire pistol when charging
+		/*if (player->readyweapon == wp_pistol && player->pistolCharging) {
+			return;
+		}
+		P_FireWeapon(player);
+	}
+	else {
+		player->refire = 0;
+		P_CheckAmmo(player);
+	}
+
+	// Check for alternate fire
+	if ((player->cmd.buttons2 & BT2_ALTATTACK)
+		&& player->pendingweapon == wp_nochange
+		&& player->health)
+	{
+		player->refire++;
+
+		// Don't auto re-fire pistol when charging
+		/*if (player->readyweapon == wp_pistol && player->pistolCharging) {
+			return;
+		}
+		P_FireWeapon(player);
+	}
+	else {
+		player->refire = 0;
+		P_CheckAmmo(player);
+	}
+}*/
+//OG Implementation
 void A_ReFire(player_t* player, pspdef_t* psp) {
 	// check for fire
 	//    (if a weaponchange is pending, let it go through instead)
@@ -394,6 +484,8 @@ void A_ReFire(player_t* player, pspdef_t* psp) {
 		P_CheckAmmo(player);
 	}
 }
+
+
 
 //
 // A_CheckReload
@@ -721,10 +813,86 @@ void P_GunShot(mobj_t* mo, boolean accurate) {
 }
 
 //
+// P_ChargedGunShot
+//
+//
+//DreadBuster Gun Shot
+void P_DreadBusterShot(mobj_t* mo, boolean accurate) {
+	player_t* p = &players[consoleplayer];
+	angle_t     angle;
+	int         damage;
+
+
+	damage = ((P_Random(pr_gunshot) & 16) * 6) + 6;
+	if (p->powers[pw_quaddamage]) {
+		damage *= 4;
+	}
+	angle = mo->angle;
+
+	if (!accurate) {
+
+		angle += P_RandomShift(pr_misfire, 18);
+	}
+
+	P_LineAttack(mo, angle, MISSILERANGE, bulletslope, damage);
+}
+
+//
 // A_FirePistol
 //
 void A_FirePistol(player_t* player, pspdef_t* psp)
-{
+{	/*
+	// If the player is charging, we need to check if the charge time has reached the maximum
+	int chargeTime;
+	//int attackHeld;
+
+	// If the player is not charging or has no weapon, return
+	if (!player || !player->mo)
+		return;
+
+	// Check if the player has ammo for the weapon
+	ammotype_t ammo = weaponinfo[player->readyweapon].ammo;
+	if (ammo != am_noammo && (ammo < 0 || ammo >= NUMAMMO || player->ammo[ammo] <= 0))
+		return;
+
+	//Start Charging
+	if (player->cmd.buttons2 & BT2_ALTATTACK && !player->pistolCharging && !player->pistolCharged) {
+		player->pistolCharging = true;
+	}
+
+	// If charging, increase charge time
+	if (player->pistolCharging) {
+		player->pistolChargeTime++;
+		chargeTime = player->pistolChargeTime++;
+		// If charge time exceeds 140, set charged state
+		if (chargeTime >= 140) {
+			player->pistolCharged = true;
+			player->pistolCharging = false;
+			S_StartSound(player->mo, sfx_powerup);
+		}
+		return; //don't shoot while charging
+	}
+
+	// Shot is charged
+	if (player->pistolCharged && !player->pistolCharging && player->cmd.buttons & BT_ATTACK) {
+		if (ammo != am_noammo && player->ammo[ammo] >= 4) {
+			P_SetPsprite(player, wp_pistol, weaponinfo[player->readyweapon].altatkstate);
+			S_StartSound(player->mo, sfx_shotgun);
+			if (player->powers[pw_quaddamage]) {
+				S_StartSound(player->mo, sfx_quaddamageatt);
+			}
+			player->ammo[ammo] -= 4;
+			P_SetPsprite(player, ps_flash, weaponinfo[player->readyweapon].flashstate);
+			P_BulletSlope(player->mo);
+			P_ChargedGunShot(player->mo, !player->refire);
+		}
+		chargeTime = 0; //Resetting the var to make sure
+		player->pistolChargeTime = 0; // Reset charge time
+		player->pistolCharged = false;
+		return;
+	}*/
+
+	// Normal firing
 	S_StartSound(player->mo, sfx_pistol);
 	if (player->powers[pw_quaddamage]) {
 		S_StartSound(player->mo, sfx_quaddamageatt);
@@ -1228,7 +1396,8 @@ void P_SetupPsprites(player_t* player) {
 	for (i = 0; i < NUMPSPRITES; i++) {
 		player->psprites[i].state = NULL;
 	}
-
+	player->pistolChargeTime = 0; //Pistol charge time reset
+	player->pistolCharged = false; //Pistol charged state reset
 	// spawn the gun
 	player->pendingweapon = player->readyweapon;
 	P_BringUpWeapon(player);
@@ -1488,4 +1657,22 @@ void A_FireFlamethrower(player_t* player, pspdef_t* psp) {
 	{
 		S_StartSound(player->mo, sfx_flamefire2);
 	}
+}
+
+//
+// A_FireDreadBuster
+//
+void A_FireDreadBuster(player_t* player, pspdef_t* psp)
+{	// Normal firing
+	S_StartSound(player->mo, sfx_shotgun);
+	if (player->powers[pw_quaddamage]) {
+		S_StartSound(player->mo, sfx_quaddamageatt);
+	}
+
+	player->ammo[weaponinfo[player->readyweapon].ammo]--;
+
+	P_SetPsprite(player, ps_flash, weaponinfo[player->readyweapon].flashstate);
+	P_BulletSlope(player->mo);
+
+	P_DreadBusterShot(player->mo, !player->refire);
 }

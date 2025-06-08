@@ -2267,7 +2267,7 @@ void A_SpawnSmoke(mobj_t* mobj) {
 			mobj->momx = mobj->momy = mobj->momz = 0;
 
 			P_SetMobjState(mobj, mobj->info->deathstate);
-			S_StartSound(mobj, mobj->info->deathsound, mobj);
+			S_StartSound(mobj, mobj->info->deathsound);
 		}
 	}
 }

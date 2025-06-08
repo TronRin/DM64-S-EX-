@@ -203,6 +203,7 @@ typedef enum {
 	wp_hexashotgun,
 	wp_bfg10k,
 	wp_flamethrower,
+	wp_dreadbuster,
 	NUMWEAPONS,
 
 	// No pending weapon change.

@@ -54,6 +54,7 @@ typedef enum {
 	PCKEY_LOAD,
 	PCKEY_SCREENSHOT,
 	PCKEY_GAMMA,
+	PCKEY_ALTATTACK,
 	NUM_PCKEYS
 } pckeys_t;
 
